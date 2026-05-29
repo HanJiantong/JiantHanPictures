@@ -1,0 +1,338 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: #f5f7fc;
+    color: #1e293b;
+    line-height: 1.5;
+    scroll-behavior: smooth;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+}
+
+.hero h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #1e2b3c, #2c5a6e);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+}
+
+.hero .sub {
+    font-size: 1rem;
+    color: #4b5563;
+    border-bottom: 2px solid #cbd5e1;
+    display: inline-block;
+    padding-bottom: 0.3rem;
+}
+
+.hero p {
+    margin-top: 0.8rem;
+    color: #5b6e8c;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.timeline {
+    position: relative;
+    margin: 2rem 0 3rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50px;
+    width: 3px;
+    background: linear-gradient(to bottom, #9ab3d5, #cbdbe9, #9ab3d5);
+    transform: translateX(-50%);
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    padding-left: 70px;
+    transition: transform 0.2s ease;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: 42px;
+    top: 28px;
+    width: 18px;
+    height: 18px;
+    background: #ffffff;
+    border: 3px solid #2c5a6e;
+    border-radius: 50%;
+    z-index: 3;
+    box-shadow: 0 0 0 4px rgba(44, 90, 110, 0.15);
+    transition: all 0.25s ease;
+}
+
+.timeline-item:hover .timeline-dot {
+    background: #2c5a6e;
+    transform: scale(1.15);
+    box-shadow: 0 0 0 6px rgba(44, 90, 110, 0.25);
+}
+
+.timeline-card {
+    background: #ffffff;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px -12px rgba(0, 0, 0, 0.1);
+    transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border: 1px solid rgba(226, 232, 240, 0.6);
+}
+
+.timeline-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 28px 38px -16px rgba(0, 0, 0, 0.2);
+    border-color: #cbd5e1;
+}
+
+.card-header {
+    padding: 1.25rem 1.5rem 0.5rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.card-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eef2ff;
+    padding: 0.3rem 1rem;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #1e4a6b;
+}
+
+.card-title {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #0f2c3b;
+    line-height: 1.3;
+    margin: 0.25rem 0 0 0;
+    word-break: break-word;
+}
+
+.card-image {
+    width: 100%;
+    overflow: hidden;
+    background: #eef2fa;
+    cursor: pointer;
+    position: relative;
+}
+
+.card-image img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    transition: transform 0.5s ease, filter 0.3s;
+    display: block;
+}
+
+.card-image:hover img {
+    transform: scale(1.02);
+    filter: brightness(1.02);
+}
+
+.image-overlay-icon {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    padding: 6px 12px;
+    border-radius: 40px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.card-image:hover .image-overlay-icon {
+    opacity: 1;
+}
+
+.card-description {
+    padding: 1.2rem 1.5rem 1.6rem 1.5rem;
+    font-size: 0.95rem;
+    color: #2d3e50;
+    border-top: 1px solid #edf2f7;
+    background: #fefefe;
+    line-height: 1.55;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+    .hero h1 {
+        font-size: 2rem;
+    }
+    .timeline::before {
+        left: 28px;
+    }
+    .timeline-item {
+        padding-left: 48px;
+    }
+    .timeline-dot {
+        left: 22px;
+        width: 14px;
+        height: 14px;
+        top: 22px;
+        border-width: 2.5px;
+    }
+    .card-title {
+        font-size: 1.35rem;
+    }
+    .card-image img {
+        height: 240px;
+    }
+}
+
+@media (max-width: 480px) {
+    .timeline::before {
+        left: 22px;
+    }
+    .timeline-item {
+        padding-left: 38px;
+    }
+    .timeline-dot {
+        left: 16px;
+        width: 12px;
+        height: 12px;
+        top: 20px;
+    }
+    .card-image img {
+        height: 200px;
+    }
+    .card-title {
+        font-size: 1.25rem;
+    }
+}
+
+/* 灯箱样式 */
+.lightbox-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 1100;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.lightbox-content img {
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+    object-fit: contain;
+}
+
+.lightbox-caption {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    padding: 0.6rem 1.2rem;
+    width: fit-content;
+    margin: 0 auto;
+    border-radius: 60px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    font-size: 0.9rem;
+}
+
+.close-lightbox {
+    position: absolute;
+    top: 28px;
+    right: 32px;
+    color: white;
+    font-size: 2rem;
+    background: rgba(0,0,0,0.5);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-lightbox:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem 0 1rem;
+    border-top: 1px solid #e2e8f0;
+    color: #6c7e97;
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #ffffffcc;
+    border-radius: 48px;
+    margin-top: 2rem;
+    color: #5e7e9e;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.6;
+}

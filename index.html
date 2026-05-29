@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>时光轴 · 本地照片展</title>
+    <!-- 外部样式 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 字体与图标库（仍使用CDN，可轻松替换为本地） -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="hero">
+        <h1><i class="fas fa-images" style="margin-right: 12px;"></i>本地时光轴</h1>
+        <div class="sub">编辑 script.js 中的 photos 数组即可展示您的照片</div>
+        <p>按照说明将照片放入 images 文件夹，并修改 photos 数组中的图片路径。<br>点击任意照片可全屏放大查看。</p>
+    </div>
+
+    <div id="timelineContainer" class="timeline"></div>
+
+    <div class="footer">
+        <span><i class="fas fa-folder-open"></i> 照片路径硬编码，完全离线可用  </span>
+        <span><i class="far fa-edit"></i> 修改 photos 数组即可自定义顺序与内容</span>
+    </div>
+</div>
+
+<!-- 灯箱 -->
+<div id="lightbox" class="lightbox-modal">
+    <div class="close-lightbox" id="closeLightboxBtn">&times;</div>
+    <div class="lightbox-content">
+        <img id="lightboxImg" src="" alt="放大预览">
+    </div>
+    <div id="lightboxCaption" class="lightbox-caption"></div>
+</div>
+
+<!-- 外部脚本 -->
+<script src="script.js"></script>
+</body>
+</html>
