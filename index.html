@@ -2,38 +2,28 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>时光轴 · 本地照片展</title>
-    <!-- 外部样式 -->
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./assets/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>时光轴 · 自动生成影集</title>
+    <link rel="stylesheet" href="assets/css/all.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="container">
     <div class="hero">
-        <h1><i class="fas fa-images" style="margin-right: 12px;"></i>本地时光轴</h1>
-        <div class="sub">编辑 script.js 中的 photos 数组即可展示您的照片</div>
-        <p>按照说明将照片放入 images 文件夹，并修改 photos 数组中的图片路径。<br>点击任意照片可全屏放大查看。</p>
+        <h1><i class="fas fa-images"></i> 时光轴 · 智能影集</h1>
+        <div class="sub">照片自动按拍摄时间排序</div>
+        <p>运行 `node generate-photos.js` 即可根据 images 文件夹内的照片生成配置。</p>
     </div>
-
-    <div id="timelineContainer" class="timeline"></div>
-
-    <div class="footer">
-        <span><i class="fas fa-folder-open"></i> 照片路径硬编码，完全离线可用  </span>
-        <span><i class="far fa-edit"></i> 修改 photos 数组即可自定义顺序与内容</span>
+    <div id="timelineContainer" class="timeline">
+        <div class="empty-state"><i class="far fa-images"></i><p>加载中...</p></div>
     </div>
+    <div class="footer">照片来自本地，按 EXIF 拍摄时间排序</div>
 </div>
-
-<!-- 灯箱 -->
 <div id="lightbox" class="lightbox-modal">
     <div class="close-lightbox" id="closeLightboxBtn">&times;</div>
-    <div class="lightbox-content">
-        <img id="lightboxImg" src="" alt="放大预览">
-    </div>
+    <div class="lightbox-content"><img id="lightboxImg" src="" alt="放大预览"></div>
     <div id="lightboxCaption" class="lightbox-caption"></div>
 </div>
-
-<!-- 外部脚本 -->
-<script src="script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
