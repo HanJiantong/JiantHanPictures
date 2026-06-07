@@ -1,0 +1,26 @@
+{
+  "name": "jianthanpictures",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HanJiantong/JiantHanPictures.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HanJiantong/JiantHanPictures/issues"
+  },
+  "homepage": "https://github.com/HanJiantong/JiantHanPictures#readme",
+  "dependencies": {
+    "exifr": "^7.1.3",
+    "fs-extra": "^11.3.5",
+    "path": "^0.12.7"
+  }
+}
