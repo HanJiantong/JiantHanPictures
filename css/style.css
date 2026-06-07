@@ -482,3 +482,86 @@ body {
     margin-bottom: 1rem;
     opacity: 0.6;
 }
+
+/* 分组折叠样式 */
+.timeline-group {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+/* 分组标题 */
+.timeline-group-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--card-bg);
+    border-radius: 48px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.timeline-group-header:hover {
+    background: var(--date-bg);
+    border-color: var(--card-hover-border);
+}
+
+.group-toggle-icon {
+    font-size: 1.2rem;
+    color: var(--date-text);
+    transition: transform 0.2s;
+}
+
+.group-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--title-color);
+}
+
+.group-count {
+    margin-left: auto;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: var(--date-bg);
+    padding: 4px 12px;
+    border-radius: 30px;
+}
+
+/* 组内容区域（包裹 timeline-item） */
+.timeline-group-content {
+    position: relative;
+    padding-left: 30px;
+}
+
+/* 在组内重新定义中轴线位置（相对于组内容） */
+.timeline-group-content .timeline {
+    position: relative;
+}
+.timeline-group-content .timeline::before {
+    left: 20px;
+}
+.timeline-group-content .timeline-item {
+    padding-left: 50px;
+}
+.timeline-group-content .timeline-dot {
+    left: 22px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .timeline-group-content {
+        padding-left: 15px;
+    }
+    .timeline-group-content .timeline-item {
+        padding-left: 40px;
+    }
+    .timeline-group-content .timeline-dot {
+        left: 18px;
+    }
+    .group-title {
+        font-size: 1.1rem;
+    }
+}
