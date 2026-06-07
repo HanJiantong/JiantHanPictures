@@ -88,3 +88,51 @@ fetch('photos.json')
         console.error('加载 photos.json 失败，请运行 generate-photos.js', err);
         timelineContainer.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>未找到 photos.json，请运行 node generate-photos.js 生成配置。</p></div>`;
     });
+// 主题切换功能
+(function initTheme() {
+    const themeToggle = document.getElementById('themeToggle');
+    if (!themeToggle) return;
+
+    // 读取保存的主题偏好
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // 设置主题
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i> 亮色模式';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i> 暗色模式';
+        }
+    }
+
+    // 初始应用
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        // 跟随系统
+        if (prefersDark) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+    }
+
+    // 监听系统主题变化（当没有手动覆盖时）
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        const currentManual = localStorage.getItem('theme');
+        if (!currentManual) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+
+    // 切换按钮点击
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        setTheme(isDark ? 'light' : 'dark');
+    });
+})();
