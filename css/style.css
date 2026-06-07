@@ -1,7 +1,7 @@
 /* 引入本地可变字体 - 思源黑体 */
 @font-face {
     font-family: 'SourceHanSansCN-VF';
-    src: url('../fonts/SourceHanSansCN-VF.otf.woff2') format('woff2-variations');
+    src: url('../assets/fonts/SourceHanSansCN-VF.otf.woff2') format('woff2-variations');
     font-weight: 100 900;
     font-style: normal;
     font-display: swap;
