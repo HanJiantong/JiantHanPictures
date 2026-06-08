@@ -581,3 +581,34 @@ body {
         font-size: 1.1rem;
     }
 }
+
+/* EXIF、地点、简介样式 */
+.card-description {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.exif-info,
+.location-info,
+.intro-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+}
+
+.exif-info i,
+.location-info i,
+.intro-text i {
+    width: 20px;
+    color: var(--date-text);
+}
+
+.intro-text {
+    margin-top: 4px;
+    border-top: 1px dashed var(--desc-border);
+    padding-top: 8px;
+    font-style: italic;
+}

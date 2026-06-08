@@ -136,14 +136,28 @@ function renderTimeline() {
     attachLightboxEvents();
 }
 
-// 渲染组内的照片项（保持原来的时间轴样式，但去掉外面的中轴线，改用组内相对位置）
 function renderGroupItems(items) {
     let itemsHtml = '';
     items.forEach(photo => {
         const safeDate = escapeHtml(photo.date);
         const safeTitle = escapeHtml(photo.title);
-        const safeDesc = escapeHtml(photo.description);
+        const safeIntro = escapeHtml(photo.intro || '');
+        const safeLocation = escapeHtml(photo.location || '');
+        const shutter = escapeHtml(photo.shutter || '');
+        const aperture = escapeHtml(photo.aperture || '');
+        const iso = escapeHtml(photo.iso || '');
         const imageUrl = photo.imagePath;
+
+        // 构建参数行（只有非空才显示）
+        let exifLine = '';
+        if (shutter || aperture || iso) {
+            exifLine = `<div class="exif-info"><i class="fas fa-camera"></i> ${shutter} ${aperture} ${iso}</div>`;
+        }
+        let locationLine = '';
+        if (safeLocation) {
+            locationLine = `<div class="location-info"><i class="fas fa-map-marker-alt"></i> ${safeLocation}</div>`;
+        }
+
         itemsHtml += `
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
@@ -157,7 +171,9 @@ function renderGroupItems(items) {
                         <div class="image-overlay-icon"><i class="fas fa-search-plus"></i> 点击放大</div>
                     </div>
                     <div class="card-description">
-                        <i class="fas fa-camera"></i> ${safeDesc}
+                        ${exifLine}
+                        ${locationLine}
+                        <div class="intro-text"><i class="fas fa-pen"></i> ${safeIntro}</div>
                     </div>
                 </div>
             </div>

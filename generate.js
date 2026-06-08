@@ -1,4 +1,4 @@
-// generate-photos.js
+// generate.js
 const fs = require('fs-extra');
 const path = require('path');
 const exifr = require('exifr');
@@ -6,7 +6,6 @@ const exifr = require('exifr');
 const imagesDir = path.join(__dirname, 'images');
 const outputFile = path.join(__dirname, 'photos.json');
 
-// 支持的图片扩展名
 const supportedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'];
 
 async function getAllImageFiles(dir) {
@@ -26,20 +25,49 @@ async function getAllImageFiles(dir) {
     return results;
 }
 
-async function getPhotoDate(filePath) {
+// 格式化快门速度（例如 1/125 或 0.3"）
+function formatShutter(exposureTime) {
+    if (!exposureTime) return '';
+    if (typeof exposureTime === 'number') {
+        if (exposureTime >= 1) return `${Math.round(exposureTime)}"`;
+        // 转换为分数形式，如 1/125
+        const denominator = Math.round(1 / exposureTime);
+        return `1/${denominator}`;
+    }
+    return String(exposureTime);
+}
+
+// 格式化光圈（例如 f/2.8）
+function formatAperture(fNumber) {
+    if (!fNumber) return '';
+    if (typeof fNumber === 'number') return `f/${fNumber.toFixed(1)}`;
+    return String(fNumber);
+}
+
+async function getPhotoMetadata(filePath) {
     try {
-        const exif = await exifr.parse(filePath, { pick: ['DateTimeOriginal', 'CreateDate'] });
+        // 读取 EXIF 所需字段
+        const exif = await exifr.parse(filePath, {
+            pick: ['DateTimeOriginal', 'CreateDate', 'ExposureTime', 'FNumber', 'ISO']
+        });
+        let date = null;
         if (exif && (exif.DateTimeOriginal || exif.CreateDate)) {
             const dateStr = exif.DateTimeOriginal || exif.CreateDate;
-            const date = new Date(dateStr);
-            if (!isNaN(date.getTime())) return date;
+            date = new Date(dateStr);
         }
+        if (!date || isNaN(date.getTime())) {
+            const stats = await fs.stat(filePath);
+            date = new Date(stats.mtime);
+        }
+        const shutter = exif?.ExposureTime ? formatShutter(exif.ExposureTime) : '';
+        const aperture = exif?.FNumber ? formatAperture(exif.FNumber) : '';
+        const iso = exif?.ISO ? `ISO ${exif.ISO}` : '';
+        return { date, shutter, aperture, iso };
     } catch (err) {
         console.warn(`无法读取EXIF: ${path.basename(filePath)}`, err.message);
+        const stats = await fs.stat(filePath);
+        return { date: new Date(stats.mtime), shutter: '', aperture: '', iso: '' };
     }
-    // 回退到文件修改时间
-    const stats = await fs.stat(filePath);
-    return new Date(stats.mtime);
 }
 
 async function generate() {
@@ -53,27 +81,36 @@ async function generate() {
 
     const photos = [];
     for (const fullPath of imageFiles) {
-        const relativePath = path.relative(__dirname, fullPath).replace(/\\/g, '/'); // 相对路径
+        const relativePath = path.relative(__dirname, fullPath).replace(/\\/g, '/');
         const fileName = path.basename(fullPath);
-        const dateObj = await getPhotoDate(fullPath);
-        const timestamp = dateObj.getTime();
-        const displayDate = `${dateObj.getFullYear()}年 ${String(dateObj.getMonth() + 1).padStart(2, '0')}月 ${String(dateObj.getDate()).padStart(2, '0')}日`;
-        let title = "";
-        const description = `拍摄于 ${displayDate} · 文件大小: ${(fs.statSync(fullPath).size / 1024).toFixed(1)} KB`;
+        const { date, shutter, aperture, iso } = await getPhotoMetadata(fullPath);
+        const timestamp = date.getTime();
+        const displayDate = `${date.getFullYear()}年 ${String(date.getMonth() + 1).padStart(2, '0')}月 ${String(date.getDate()).padStart(2, '0')}日`;
+
+        // 固定标题（不显示文件名）
+        const title = "📷 时光影像";
+        // 自动生成简介（可后续手动覆盖）
+        const intro = `拍摄于 ${displayDate} · 文件大小: ${(fs.statSync(fullPath).size / 1024).toFixed(1)} KB`;
+        // 预留地点字段（初始为空）
+        const location = "";
+
         photos.push({
             date: displayDate,
             title: title,
-            description: description,
+            intro: intro,          // 简介（可编辑）
+            location: location,    // 地点（可编辑）
+            shutter: shutter,
+            aperture: aperture,
+            iso: iso,
             imagePath: relativePath,
             timestamp: timestamp
         });
     }
-    // 按时间戳升序排序（旧照片在前）
     photos.sort((a, b) => a.timestamp - b.timestamp);
-    // 移除临时 timestamp 字段
     const output = photos.map(({ timestamp, ...rest }) => rest);
     await fs.writeJson(outputFile, output, { spaces: 2 });
     console.log(`✅ 已生成 ${outputFile}，共 ${output.length} 张照片。`);
+    console.log('提示：您可以手动编辑 photos.json 中的 location 和 intro 字段来补充地点和简介。');
 }
 
 generate().catch(err => console.error(err));
