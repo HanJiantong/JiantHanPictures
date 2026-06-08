@@ -58,7 +58,7 @@ async function generate() {
         const dateObj = await getPhotoDate(fullPath);
         const timestamp = dateObj.getTime();
         const displayDate = `${dateObj.getFullYear()}年 ${String(dateObj.getMonth() + 1).padStart(2, '0')}月 ${String(dateObj.getDate()).padStart(2, '0')}日`;
-        let title = ""; 
+        let title = "";
         const description = `拍摄于 ${displayDate} · 文件大小: ${(fs.statSync(fullPath).size / 1024).toFixed(1)} KB`;
         photos.push({
             date: displayDate,

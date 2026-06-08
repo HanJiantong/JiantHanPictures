@@ -31,16 +31,16 @@
     --desc-bg: #fefefe;
     --img-bg: #eef2fa;
     --img-brightness: 1;
-    --overlay-bg: rgba(0,0,0,0.5);
+    --overlay-bg: rgba(0, 0, 0, 0.5);
     --overlay-text: white;
     --footer-border: #e2e8f0;
     --footer-text: #6c7e97;
     --empty-bg: #ffffffcc;
     --empty-text: #5e7e9e;
     --lightbox-bg: rgba(0, 0, 0, 0.92);
-    --lightbox-caption-bg: rgba(0,0,0,0.6);
-    --close-btn-bg: rgba(0,0,0,0.5);
-    --close-btn-hover: rgba(255,255,255,0.2);
+    --lightbox-caption-bg: rgba(0, 0, 0, 0.6);
+    --close-btn-bg: rgba(0, 0, 0, 0.5);
+    --close-btn-hover: rgba(255, 255, 255, 0.2);
 }
 
 /* 暗色主题变量 */
@@ -67,16 +67,16 @@
     --desc-bg: #1e1e1e;
     --img-bg: #151515;
     --img-brightness: 0.95;
-    --overlay-bg: rgba(0,0,0,0.7);
+    --overlay-bg: rgba(0, 0, 0, 0.7);
     --overlay-text: #e0e0e0;
     --footer-border: #2c2c2c;
     --footer-text: #8a8a8a;
     --empty-bg: #1a1a1a;
     --empty-text: #9e9e9e;
     --lightbox-bg: rgba(0, 0, 0, 0.95);
-    --lightbox-caption-bg: rgba(0,0,0,0.7);
-    --close-btn-bg: rgba(30,30,30,0.8);
-    --close-btn-hover: rgba(80,80,80,0.9);
+    --lightbox-caption-bg: rgba(0, 0, 0, 0.7);
+    --close-btn-bg: rgba(30, 30, 30, 0.8);
+    --close-btn-hover: rgba(80, 80, 80, 0.9);
 }
 
 /* 跟随系统自动切换（当没有手动设置时） */
@@ -104,16 +104,16 @@
         --desc-bg: #1e1e1e;
         --img-bg: #151515;
         --img-brightness: 0.95;
-        --overlay-bg: rgba(0,0,0,0.7);
+        --overlay-bg: rgba(0, 0, 0, 0.7);
         --overlay-text: #e0e0e0;
         --footer-border: #2c2c2c;
         --footer-text: #8a8a8a;
         --empty-bg: #1a1a1a;
         --empty-text: #9e9e9e;
         --lightbox-bg: rgba(0, 0, 0, 0.95);
-        --lightbox-caption-bg: rgba(0,0,0,0.7);
-        --close-btn-bg: rgba(30,30,30,0.8);
-        --close-btn-hover: rgba(80,80,80,0.9);
+        --lightbox-caption-bg: rgba(0, 0, 0, 0.7);
+        --close-btn-bg: rgba(30, 30, 30, 0.8);
+        --close-btn-hover: rgba(80, 80, 80, 0.9);
     }
 }
 
@@ -344,15 +344,19 @@ body {
     .container {
         padding: 1.5rem 1rem;
     }
+
     .hero h1 {
         font-size: 2rem;
     }
+
     .timeline::before {
         left: 28px;
     }
+
     .timeline-item {
         padding-left: 48px;
     }
+
     .timeline-dot {
         left: 22px;
         width: 14px;
@@ -360,9 +364,11 @@ body {
         top: 22px;
         border-width: 2.5px;
     }
+
     .card-title {
         font-size: 1.35rem;
     }
+
     .card-image img {
         height: 240px;
     }
@@ -372,18 +378,22 @@ body {
     .timeline::before {
         left: 22px;
     }
+
     .timeline-item {
         padding-left: 38px;
     }
+
     .timeline-dot {
         left: 16px;
         width: 12px;
         height: 12px;
         top: 20px;
     }
+
     .card-image img {
         height: 200px;
     }
+
     .card-title {
         font-size: 1.25rem;
     }
@@ -540,12 +550,15 @@ body {
 .timeline-group-content .timeline {
     position: relative;
 }
+
 .timeline-group-content .timeline::before {
     left: 20px;
 }
+
 .timeline-group-content .timeline-item {
     padding-left: 50px;
 }
+
 .timeline-group-content .timeline-dot {
     left: 22px;
 }
@@ -555,12 +568,15 @@ body {
     .timeline-group-content {
         padding-left: 15px;
     }
+
     .timeline-group-content .timeline-item {
         padding-left: 40px;
     }
+
     .timeline-group-content .timeline-dot {
         left: 18px;
     }
+
     .group-title {
         font-size: 1.1rem;
     }

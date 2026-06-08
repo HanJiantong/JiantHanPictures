@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,12 @@
     <link rel="stylesheet" href="assets/fontawesome/css/all.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="toolbar">
         <button id="themeToggle" class="btn-icon"><i class="fas fa-moon"></i> 暗色模式</button>
         <button id="expandAllBtn" class="btn-icon"><i class="fas fa-expand-alt"></i> 全部展开</button>
-    <button id="collapseAllBtn" class="btn-icon"><i class="fas fa-compress-alt"></i> 全部折叠</button>
+        <button id="collapseAllBtn" class="btn-icon"><i class="fas fa-compress-alt"></i> 全部折叠</button>
     </div>
     <div class="container">
         <div class="hero">
@@ -20,7 +22,9 @@
             <p>运行 `node generate-photos.js` 即可根据 images 文件夹内的照片生成配置。</p>
         </div>
         <div id="timelineContainer" class="timeline">
-            <div class="empty-state"><i class="far fa-images"></i><p>加载中...</p></div>
+            <div class="empty-state"><i class="far fa-images"></i>
+                <p>加载中...</p>
+            </div>
         </div>
         <div class="footer">照片来自本地，按 EXIF 拍摄时间排序</div>
     </div>
@@ -31,4 +35,5 @@
     </div>
     <script src="js/script.js"></script>
 </body>
+
 </html>

@@ -15,7 +15,7 @@ const collapseAllBtn = document.getElementById('collapseAllBtn');
 // 辅助函数
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
+    return str.replace(/[&<>]/g, function (m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -34,7 +34,7 @@ function groupPhotosByMonth(photosArray) {
         const month = match[2].padStart(2, '0');
         const yearMonth = `${year}-${month}`;
         const displayMonth = `${year}年 ${parseInt(month)}月`;
-        
+
         if (!groups.has(yearMonth)) {
             groups.set(yearMonth, { yearMonth, displayMonth, items: [] });
         }
@@ -109,7 +109,7 @@ function renderTimeline() {
         const isCollapsed = collapsedGroups.has(group.yearMonth);
         const collapseIcon = isCollapsed ? 'fa-chevron-right' : 'fa-chevron-down';
         const groupContentStyle = isCollapsed ? 'display: none;' : '';
-        
+
         html += `
             <div class="timeline-group" data-yearmonth="${group.yearMonth}">
                 <div class="timeline-group-header" data-yearmonth="${group.yearMonth}">
@@ -123,15 +123,15 @@ function renderTimeline() {
             </div>
         `;
     });
-    
+
     timelineContainer.innerHTML = html;
-    
+
     // 绑定组头部点击事件
     document.querySelectorAll('.timeline-group-header').forEach(header => {
         header.removeEventListener('click', headerClickHandler);
         header.addEventListener('click', headerClickHandler);
     });
-    
+
     // 绑定图片灯箱事件（动态内容）
     attachLightboxEvents();
 }
