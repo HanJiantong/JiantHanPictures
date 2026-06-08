@@ -260,30 +260,33 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 主题切换（保持不变）
 (function initTheme() {
-    const themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return;
+    const themeCheckbox = document.getElementById('themeToggleCheckbox');
+    if (!themeCheckbox) return;
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     function setTheme(theme) {
         if (theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i> 亮色模式';
+            themeCheckbox.checked = true;
         } else {
             document.documentElement.removeAttribute('data-theme');
             localStorage.setItem('theme', 'light');
-            themeToggle.innerHTML = '<i class="fas fa-moon"></i> 暗色模式';
+            themeCheckbox.checked = false;
         }
     }
-    if (savedTheme) setTheme(savedTheme);
-    else setTheme(prefersDark ? 'dark' : 'light');
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        setTheme(prefersDark ? 'dark' : 'light');
+    }
+    themeCheckbox.addEventListener('change', (e) => {
+        setTheme(e.target.checked ? 'dark' : 'light');
     });
-    themeToggle.addEventListener('click', () => {
-        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-        setTheme(isDark ? 'light' : 'dark');
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            setTheme(e.matches ? 'dark' : 'light');
+        }
     });
 })();

@@ -10,10 +10,13 @@
 </head>
 
 <body>
-    <div class="toolbar">
-        <button id="themeToggle" class="btn-icon"><i class="fas fa-moon"></i> 暗色模式</button>
-        <button id="expandAllBtn" class="btn-icon"><i class="fas fa-expand-alt"></i> 全部展开</button>
-        <button id="collapseAllBtn" class="btn-icon"><i class="fas fa-compress-alt"></i> 全部折叠</button>
+    <div class="theme-switch-wrapper">
+        <i class="fas fa-sun theme-icon theme-icon-left"></i>
+        <label class="theme-switch">
+            <input type="checkbox" id="themeToggleCheckbox">
+            <span class="slider round"></span>
+        </label>
+        <i class="fas fa-moon theme-icon theme-icon-right"></i>
     </div>
     <div class="container">
         <div class="hero">
