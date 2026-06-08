@@ -12,16 +12,15 @@ const closeLightboxBtn = document.getElementById('closeLightboxBtn');
 const expandAllBtn = document.getElementById('expandAllBtn');
 const collapseAllBtn = document.getElementById('collapseAllBtn');
 
-let timelineWrapper = null;     // 时间轴外层容器（用于垂直居中）
-let timelineElement = null;     // 时间轴实际元素
+let timelineWrapper = null;
+let timelineElement = null;
 
-// 辅助函数
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
 }
 
-// 按月分组（升序）
+// 按月分组，并对每个组内的照片按 timestamp 排序
 function groupPhotosByMonth(photosArray) {
     const groups = new Map();
     photosArray.forEach(photo => {
@@ -36,22 +35,24 @@ function groupPhotosByMonth(photosArray) {
         }
         groups.get(yearMonth).items.push(photo);
     });
-    const sorted = Array.from(groups.values());
-    sorted.sort((a, b) => a.yearMonth.localeCompare(b.yearMonth));
-    return sorted;
+    // 对每个月份内的照片按 timestamp 升序排序
+    for (let group of groups.values()) {
+        group.items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    }
+    const sortedGroups = Array.from(groups.values());
+    sortedGroups.sort((a, b) => a.yearMonth.localeCompare(b.yearMonth));
+    return sortedGroups;
 }
 
-// 居中时间轴（仅在无展开月份时生效）
 function centerTimelineVertically() {
     if (!timelineWrapper || !timelineElement) return;
-    if (currentOpenMonth !== null) return; // 展开时不做居中
+    if (currentOpenMonth !== null) return;
     const viewportHeight = window.innerHeight;
     const timelineHeight = timelineElement.offsetHeight;
     const marginTop = Math.max(20, (viewportHeight - timelineHeight) / 2);
     timelineWrapper.style.marginTop = `${marginTop}px`;
 }
 
-// 渲染时间轴节点
 function renderTimelineNodes() {
     const track = document.querySelector('.horizontal-timeline-track');
     if (!track) return;
@@ -70,7 +71,6 @@ function renderTimelineNodes() {
         `;
     });
     track.innerHTML = html;
-    // 绑定节点点击事件
     document.querySelectorAll('.timeline-node').forEach(node => {
         node.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -84,7 +84,6 @@ function renderTimelineNodes() {
     });
 }
 
-// 展开指定月份的照片区域
 function expandPhotoSection(monthKey) {
     if (currentOpenMonth === monthKey) return;
     if (currentOpenMonth) {
@@ -94,14 +93,12 @@ function expandPhotoSection(monthKey) {
     if (!monthData || !monthData.items.length) return;
     currentOpenMonth = monthKey;
 
-    // 更新节点高亮
     document.querySelectorAll('.timeline-node').forEach(node => {
         const m = node.getAttribute('data-month');
         if (m === currentOpenMonth) node.classList.add('active');
         else node.classList.remove('active');
     });
 
-    // 让时间轴脱离居中（设置固定小边距）
     if (timelineWrapper) {
         timelineWrapper.style.marginTop = '20px';
     }
@@ -144,7 +141,6 @@ function expandPhotoSection(monthKey) {
     html += '</div>';
     photoSection.innerHTML = html;
 
-    // 绑定缩略图点击事件（显示大图和详细信息）
     document.querySelectorAll('.timeline-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('.close-section-btn')) return;
@@ -166,7 +162,6 @@ function expandPhotoSection(monthKey) {
         });
     });
 
-    // 绑定关闭按钮
     const closeBtn = photoSection.querySelector('.close-section-btn');
     if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
@@ -176,27 +171,22 @@ function expandPhotoSection(monthKey) {
     }
 }
 
-// 收起照片区域，恢复时间轴垂直居中
 function collapsePhotoSection() {
     const photoSection = document.getElementById('photoSection');
     if (photoSection) {
         photoSection.classList.remove('expanded');
         photoSection.innerHTML = '';
     }
-    // 清除节点高亮
     document.querySelectorAll('.timeline-node').forEach(node => {
         node.classList.remove('active');
     });
     currentOpenMonth = null;
-    // 恢复时间轴垂直居中
     if (timelineWrapper) {
         timelineWrapper.style.marginTop = '';
     }
-    // 重新计算居中
     centerTimelineVertically();
 }
 
-// 初始化页面结构
 function init() {
     if (!photos.length) {
         timelineContainer.innerHTML = `<div class="empty-state"><i class="far fa-images"></i><p>暂无照片，请运行 generate.js 生成 photos.json。</p></div>`;
@@ -218,12 +208,10 @@ function init() {
     timelineWrapper = document.getElementById('timelineWrapper');
     timelineElement = timelineWrapper?.querySelector('.horizontal-timeline');
     renderTimelineNodes();
-    // 初始垂直居中
     centerTimelineVertically();
     window.addEventListener('resize', () => centerTimelineVertically());
 }
 
-// 加载数据
 fetch('photos.json')
     .then(res => res.json())
     .then(data => {
@@ -235,11 +223,9 @@ fetch('photos.json')
         timelineContainer.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>未找到 photos.json，请运行 generate.js 生成。</p></div>`;
     });
 
-// 隐藏不需要的按钮
 if (expandAllBtn) expandAllBtn.style.display = 'none';
 if (collapseAllBtn) collapseAllBtn.style.display = 'none';
 
-// 灯箱关闭事件
 closeLightboxBtn.addEventListener('click', () => {
     lightbox.style.display = 'none';
     document.body.style.overflow = '';
@@ -260,6 +246,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// 主题切换（开关）
 (function initTheme() {
     const themeCheckbox = document.getElementById('themeToggleCheckbox');
     if (!themeCheckbox) return;
