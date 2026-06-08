@@ -15,12 +15,13 @@ const collapseAllBtn = document.getElementById('collapseAllBtn');
 let timelineWrapper = null;
 let timelineElement = null;
 
+// 辅助函数
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
 }
 
-// 按月分组，并对每个组内的照片按 timestamp 排序
+// 按月分组，且组内按 timestamp 排序（精确到毫秒）
 function groupPhotosByMonth(photosArray) {
     const groups = new Map();
     photosArray.forEach(photo => {
@@ -35,7 +36,7 @@ function groupPhotosByMonth(photosArray) {
         }
         groups.get(yearMonth).items.push(photo);
     });
-    // 对每个月份内的照片按 timestamp 升序排序
+    // 对每个组内的照片按 timestamp 升序排序（旧→新）
     for (let group of groups.values()) {
         group.items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     }
@@ -44,6 +45,7 @@ function groupPhotosByMonth(photosArray) {
     return sortedGroups;
 }
 
+// 垂直居中时间轴（仅在无展开月份时生效）
 function centerTimelineVertically() {
     if (!timelineWrapper || !timelineElement) return;
     if (currentOpenMonth !== null) return;
@@ -53,6 +55,7 @@ function centerTimelineVertically() {
     timelineWrapper.style.marginTop = `${marginTop}px`;
 }
 
+// 渲染时间轴节点
 function renderTimelineNodes() {
     const track = document.querySelector('.horizontal-timeline-track');
     if (!track) return;
@@ -84,6 +87,7 @@ function renderTimelineNodes() {
     });
 }
 
+// 展开指定月份的照片区域
 function expandPhotoSection(monthKey) {
     if (currentOpenMonth === monthKey) return;
     if (currentOpenMonth) {
@@ -141,6 +145,7 @@ function expandPhotoSection(monthKey) {
     html += '</div>';
     photoSection.innerHTML = html;
 
+    // 绑定缩略图点击事件
     document.querySelectorAll('.timeline-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('.close-section-btn')) return;
@@ -162,6 +167,7 @@ function expandPhotoSection(monthKey) {
         });
     });
 
+    // 绑定关闭按钮
     const closeBtn = photoSection.querySelector('.close-section-btn');
     if (closeBtn) {
         closeBtn.addEventListener('click', (e) => {
@@ -169,8 +175,12 @@ function expandPhotoSection(monthKey) {
             collapsePhotoSection();
         });
     }
+
+    // 为新增的 .horizontal-scroll 添加垂直滚动转横向滚动功能
+    enableHorizontalWheelScroll();
 }
 
+// 收起照片区域
 function collapsePhotoSection() {
     const photoSection = document.getElementById('photoSection');
     if (photoSection) {
@@ -187,6 +197,25 @@ function collapsePhotoSection() {
     centerTimelineVertically();
 }
 
+function enableHorizontalWheelScroll() {
+    const scrollContainers = document.querySelectorAll('.horizontal-scroll');
+    scrollContainers.forEach(container => {
+        if (container._wheelBound) return;
+        container._wheelBound = true;
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            let delta = e.deltaY || e.detail || 0;
+            // 触控板滚动值较小，加速滚动（系数可调，2.0～2.5 适合大多数触控板）
+            // 判断条件：绝对值小于 30 且 deltaMode === 0（像素模式）
+            if (Math.abs(delta) < 30 && e.deltaMode === 0) {
+                delta *= 40;   // 可根据实际体验微调
+            }
+            container.scrollLeft += delta;
+        }, { passive: false });
+    });
+}
+
+// 初始化页面结构
 function init() {
     if (!photos.length) {
         timelineContainer.innerHTML = `<div class="empty-state"><i class="far fa-images"></i><p>暂无照片，请运行 generate.js 生成 photos.json。</p></div>`;
@@ -212,6 +241,7 @@ function init() {
     window.addEventListener('resize', () => centerTimelineVertically());
 }
 
+// 加载数据
 fetch('photos.json')
     .then(res => res.json())
     .then(data => {
@@ -223,9 +253,11 @@ fetch('photos.json')
         timelineContainer.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>未找到 photos.json，请运行 generate.js 生成。</p></div>`;
     });
 
+// 隐藏不需要的按钮
 if (expandAllBtn) expandAllBtn.style.display = 'none';
 if (collapseAllBtn) collapseAllBtn.style.display = 'none';
 
+// 灯箱关闭
 closeLightboxBtn.addEventListener('click', () => {
     lightbox.style.display = 'none';
     document.body.style.overflow = '';
@@ -246,7 +278,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 主题切换（开关）
+// 主题切换开关（滑动开关）
 (function initTheme() {
     const themeCheckbox = document.getElementById('themeToggleCheckbox');
     if (!themeCheckbox) return;
@@ -263,17 +295,12 @@ document.addEventListener('keydown', (e) => {
             themeCheckbox.checked = false;
         }
     }
-    if (savedTheme) {
-        setTheme(savedTheme);
-    } else {
-        setTheme(prefersDark ? 'dark' : 'light');
-    }
+    if (savedTheme) setTheme(savedTheme);
+    else setTheme(prefersDark ? 'dark' : 'light');
     themeCheckbox.addEventListener('change', (e) => {
         setTheme(e.target.checked ? 'dark' : 'light');
     });
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (!localStorage.getItem('theme')) {
-            setTheme(e.matches ? 'dark' : 'light');
-        }
+        if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
     });
 })();
