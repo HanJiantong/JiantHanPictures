@@ -259,7 +259,7 @@ body {
 }
 
 .card-header {
-    padding: 1.25rem 1.5rem 0.5rem 1.5rem;
+    padding: 1rem 1.5rem 0.25rem 1.5rem;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;

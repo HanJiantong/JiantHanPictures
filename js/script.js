@@ -164,7 +164,6 @@ function renderGroupItems(items) {
                 <div class="timeline-card">
                     <div class="card-header">
                         <span class="card-date"><i class="far fa-calendar-alt"></i> ${safeDate}</span>
-                        <h2 class="card-title">${safeTitle}</h2>
                     </div>
                     <div class="card-image" data-large="${imageUrl}" data-title="${safeTitle}" data-date="${safeDate}">
                         <img src="${imageUrl}" alt="${safeTitle}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23eef2fa%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%2394a3b8%22%3E图片加载失败%3C%2Ftext%3E%3C%2Fsvg%3E'">
