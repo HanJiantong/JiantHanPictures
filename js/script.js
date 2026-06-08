@@ -205,10 +205,14 @@ function enableHorizontalWheelScroll() {
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             let delta = e.deltaY || e.detail || 0;
-            // 触控板滚动值较小，加速滚动（系数可调，2.0～2.5 适合大多数触控板）
-            // 判断条件：绝对值小于 30 且 deltaMode === 0（像素模式）
-            if (Math.abs(delta) < 30 && e.deltaMode === 0) {
-                delta *= 40;   // 可根据实际体验微调
+            // 区分触控板（像素模式且 deltaY 绝对值较小）
+            // 鼠标滚轮的 deltaY 通常大于 50（即使慢速滚动也 > 20）
+            if (e.deltaMode === 0 && Math.abs(delta) < 50) {
+                // 触控板加速系数（提高到 15～25 让短滑有效）
+                delta *= 200;   // 可调范围 12-25
+            }
+            else {
+                delta *= 2;
             }
             container.scrollLeft += delta;
         }, { passive: false });
