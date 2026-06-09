@@ -1,42 +1,52 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>时光轴 · 自动生成影集</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>时光影集 · 智能时间轴</title>
     <link rel="stylesheet" href="assets/fontawesome/css/all.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
-    <div class="theme-switch-wrapper">
-        <i class="fas fa-sun theme-icon theme-icon-left"></i>
-        <label class="theme-switch">
-            <input type="checkbox" id="themeToggleCheckbox">
-            <span class="slider round"></span>
-        </label>
-        <i class="fas fa-moon theme-icon theme-icon-right"></i>
-    </div>
-    <div class="container">
-        <div class="hero">
-            <h1><i class="fas fa-images"></i> 时光轴 · 智能影集</h1>
-            <div class="sub">照片自动按拍摄时间排序</div>
-            <p>运行 `node generate-photos.js` 即可根据 images 文件夹内的照片生成配置。</p>
-        </div>
-        <div id="timelineContainer" class="timeline">
-            <div class="empty-state"><i class="far fa-images"></i>
-                <p>加载中...</p>
-            </div>
-        </div>
-        <div class="footer">照片来自本地，按 EXIF 拍摄时间排序</div>
-    </div>
-    <div id="lightbox" class="lightbox-modal">
-        <div class="close-lightbox" id="closeLightboxBtn">&times;</div>
-        <div class="lightbox-content"><img id="lightboxImg" src="" alt="放大预览"></div>
-        <div id="lightboxCaption" class="lightbox-caption"></div>
-    </div>
-    <script src="js/script.js"></script>
-</body>
+<!-- 右上角明暗切换开关（固定） -->
+<div class="theme-switch-wrapper">
+    <i class="fas fa-sun theme-icon theme-icon-left"></i>
+    <label class="theme-switch">
+        <input type="checkbox" id="themeToggleCheckbox">
+        <span class="slider round"></span>
+    </label>
+    <i class="fas fa-moon theme-icon theme-icon-right"></i>
+</div>
 
+<!-- 第一屏：封面 -->
+<section class="section section-cover" id="coverSection">
+    <div class="cover-content">
+        <h1 class="cover-title">时光影集</h1>
+        <p class="cover-subtitle">向下滚动，开启记忆之旅</p>
+        <div class="scroll-hint">
+            <i class="fas fa-chevron-down"></i>
+            <span>滚动鼠标</span>
+        </div>
+    </div>
+</section>
+
+<!-- 第二屏：时间轴（Flex垂直居中布局） -->
+<section class="section section-timeline" id="timelineSection">
+    <div class="timeline-container">
+        <div id="timelineContainer" class="timeline-content">
+            <div class="empty-state"><i class="far fa-images"></i>
+                <p>加载中...</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- 灯箱（照片详情） -->
+<div id="lightbox" class="lightbox-modal">
+    <div class="close-lightbox" id="closeLightboxBtn">&times;</div>
+    <div class="lightbox-content"><img id="lightboxImg" src="" alt="放大预览"></div>
+    <div id="lightboxCaption" class="lightbox-caption"></div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
 </html>

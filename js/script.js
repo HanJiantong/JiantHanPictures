@@ -1,27 +1,67 @@
-// 全局变量
+// 时光影集 - 核心逻辑 (小图无日期，展开后时间轴下移，照片在上方)
 let photos = [];
 let months = [];
 let currentOpenMonth = null;
 
-// DOM 元素
+const coverSection = document.getElementById('coverSection');
+const timelineSection = document.getElementById('timelineSection');
 const timelineContainer = document.getElementById('timelineContainer');
 const lightbox = document.getElementById('lightbox');
 const lightboxImg = document.getElementById('lightboxImg');
 const lightboxCaption = document.getElementById('lightboxCaption');
 const closeLightboxBtn = document.getElementById('closeLightboxBtn');
-const expandAllBtn = document.getElementById('expandAllBtn');
-const collapseAllBtn = document.getElementById('collapseAllBtn');
 
-let timelineWrapper = null;
-let timelineElement = null;
-
-// 辅助函数
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    return str.replace(/[&<>]/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[m] || m));
 }
 
-// 按月分组，且组内按 timestamp 排序（精确到毫秒）
+async function setRandomCoverBackground() {
+    try {
+        const response = await fetch('photos.json');
+        const photosData = await response.json();
+        if (photosData && photosData.length > 0) {
+            const randomIndex = Math.floor(Math.random() * photosData.length);
+            const randomPhoto = photosData[randomIndex];
+            const bgUrl = randomPhoto.imagePath;
+            coverSection.style.backgroundImage = `url('${bgUrl}')`;
+            coverSection.style.backgroundSize = 'cover';
+            coverSection.style.backgroundPosition = 'center';
+        } else {
+            coverSection.style.backgroundColor = '#2c5a6e';
+        }
+    } catch (err) {
+        coverSection.style.backgroundColor = '#2c5a6e';
+    }
+}
+
+let currentSectionIndex = 0;
+const sections = document.querySelectorAll('.section');
+
+function scrollToSection(index) {
+    if (index < 0 || index >= sections.length) return;
+    sections[index].scrollIntoView({behavior: 'smooth', block: 'start'});
+    currentSectionIndex = index;
+}
+
+let wheelTimer = null;
+
+function bindWheelPageSwitch() {
+    window.addEventListener('wheel', (e) => {
+        if (e.target.closest('.photo-section, .horizontal-scroll, .timeline-card')) return;
+        if (wheelTimer) return;
+        wheelTimer = setTimeout(() => {
+            wheelTimer = null;
+        }, 300);
+        const delta = e.deltaY;
+        if (delta > 0 && currentSectionIndex === 0) {
+            scrollToSection(1);
+        } else if (delta < 0 && currentSectionIndex === 1) {
+            scrollToSection(0);
+        }
+    });
+}
+
 function groupPhotosByMonth(photosArray) {
     const groups = new Map();
     photosArray.forEach(photo => {
@@ -32,11 +72,10 @@ function groupPhotosByMonth(photosArray) {
         const yearMonth = `${year}-${month}`;
         const displayMonth = `${year}年 ${parseInt(month)}月`;
         if (!groups.has(yearMonth)) {
-            groups.set(yearMonth, { yearMonth, displayMonth, items: [] });
+            groups.set(yearMonth, {yearMonth, displayMonth, items: []});
         }
         groups.get(yearMonth).items.push(photo);
     });
-    // 对每个组内的照片按 timestamp 升序排序（旧→新）
     for (let group of groups.values()) {
         group.items.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
     }
@@ -45,17 +84,6 @@ function groupPhotosByMonth(photosArray) {
     return sortedGroups;
 }
 
-// 垂直居中时间轴（仅在无展开月份时生效）
-function centerTimelineVertically() {
-    if (!timelineWrapper || !timelineElement) return;
-    if (currentOpenMonth !== null) return;
-    const viewportHeight = window.innerHeight;
-    const timelineHeight = timelineElement.offsetHeight;
-    const marginTop = Math.max(20, (viewportHeight - timelineHeight) / 2);
-    timelineWrapper.style.marginTop = `${marginTop}px`;
-}
-
-// 渲染时间轴节点
 function renderTimelineNodes() {
     const track = document.querySelector('.horizontal-timeline-track');
     if (!track) return;
@@ -87,12 +115,9 @@ function renderTimelineNodes() {
     });
 }
 
-// 展开指定月份的照片区域
 function expandPhotoSection(monthKey) {
     if (currentOpenMonth === monthKey) return;
-    if (currentOpenMonth) {
-        collapsePhotoSection();
-    }
+    if (currentOpenMonth) collapsePhotoSection();
     const monthData = months.find(m => m.yearMonth === monthKey);
     if (!monthData || !monthData.items.length) return;
     currentOpenMonth = monthKey;
@@ -103,9 +128,7 @@ function expandPhotoSection(monthKey) {
         else node.classList.remove('active');
     });
 
-    if (timelineWrapper) {
-        timelineWrapper.style.marginTop = '20px';
-    }
+    timelineSection.classList.add('timeline-expanded');
 
     const photoSection = document.getElementById('photoSection');
     if (!photoSection) return;
@@ -125,9 +148,8 @@ function expandPhotoSection(monthKey) {
         const iso = escapeHtml(photo.iso || '');
         const imageUrl = photo.imagePath;
         let exifLine = '';
-        if (shutter || aperture || iso) {
-            exifLine = `${shutter} ${aperture} ${iso}`;
-        }
+        if (shutter || aperture || iso) exifLine = `${shutter} ${aperture} ${iso}`;
+
         html += `
             <div class="timeline-card" 
                  data-img-large="${imageUrl}" 
@@ -145,7 +167,6 @@ function expandPhotoSection(monthKey) {
     html += '</div>';
     photoSection.innerHTML = html;
 
-    // 绑定缩略图点击事件
     document.querySelectorAll('.timeline-card').forEach(card => {
         card.addEventListener('click', (e) => {
             if (e.target.closest('.close-section-btn')) return;
@@ -167,60 +188,43 @@ function expandPhotoSection(monthKey) {
         });
     });
 
-    // 绑定关闭按钮
     const closeBtn = photoSection.querySelector('.close-section-btn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            collapsePhotoSection();
-        });
-    }
+    if (closeBtn) closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        collapsePhotoSection();
+    });
 
-    // 为新增的 .horizontal-scroll 添加垂直滚动转横向滚动功能
     enableHorizontalWheelScroll();
 }
 
-// 收起照片区域
 function collapsePhotoSection() {
     const photoSection = document.getElementById('photoSection');
     if (photoSection) {
         photoSection.classList.remove('expanded');
         photoSection.innerHTML = '';
     }
-    document.querySelectorAll('.timeline-node').forEach(node => {
-        node.classList.remove('active');
-    });
+    document.querySelectorAll('.timeline-node').forEach(node => node.classList.remove('active'));
     currentOpenMonth = null;
-    if (timelineWrapper) {
-        timelineWrapper.style.marginTop = '';
-    }
-    centerTimelineVertically();
+    timelineSection.classList.remove('timeline-expanded');
 }
 
 function enableHorizontalWheelScroll() {
-    const scrollContainers = document.querySelectorAll('.horizontal-scroll');
-    scrollContainers.forEach(container => {
+    const containers = document.querySelectorAll('.horizontal-scroll');
+    containers.forEach(container => {
         if (container._wheelBound) return;
         container._wheelBound = true;
         container.addEventListener('wheel', (e) => {
             e.preventDefault();
             let delta = e.deltaY || e.detail || 0;
-            // 区分触控板（像素模式且 deltaY 绝对值较小）
-            // 鼠标滚轮的 deltaY 通常大于 50（即使慢速滚动也 > 20）
             if (e.deltaMode === 0 && Math.abs(delta) < 50) {
-                // 触控板加速系数（提高到 15～25 让短滑有效）
-                delta *= 200;   // 可调范围 12-25
-            }
-            else {
-                delta *= 2;
+                delta *= 18;
             }
             container.scrollLeft += delta;
-        }, { passive: false });
+        }, {passive: false});
     });
 }
 
-// 初始化页面结构
-function init() {
+function initTimeline() {
     if (!photos.length) {
         timelineContainer.innerHTML = `<div class="empty-state"><i class="far fa-images"></i><p>暂无照片，请运行 generate.js 生成 photos.json。</p></div>`;
         return;
@@ -238,30 +242,24 @@ function init() {
         </div>
         <div id="photoSection" class="photo-section"></div>
     `;
-    timelineWrapper = document.getElementById('timelineWrapper');
-    timelineElement = timelineWrapper?.querySelector('.horizontal-timeline');
     renderTimelineNodes();
-    centerTimelineVertically();
-    window.addEventListener('resize', () => centerTimelineVertically());
 }
 
-// 加载数据
 fetch('photos.json')
     .then(res => res.json())
     .then(data => {
         photos = data;
-        init();
+        setRandomCoverBackground();
+        initTimeline();
+        bindWheelPageSwitch();
     })
     .catch(err => {
         console.error(err);
         timelineContainer.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>未找到 photos.json，请运行 generate.js 生成。</p></div>`;
+        coverSection.style.backgroundColor = '#2c5a6e';
+        bindWheelPageSwitch();
     });
 
-// 隐藏不需要的按钮
-if (expandAllBtn) expandAllBtn.style.display = 'none';
-if (collapseAllBtn) collapseAllBtn.style.display = 'none';
-
-// 灯箱关闭
 closeLightboxBtn.addEventListener('click', () => {
     lightbox.style.display = 'none';
     document.body.style.overflow = '';
@@ -282,28 +280,27 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// 主题切换开关（滑动开关）
 (function initTheme() {
     const themeCheckbox = document.getElementById('themeToggleCheckbox');
     if (!themeCheckbox) return;
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     function setTheme(theme) {
         if (theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
             localStorage.setItem('theme', 'dark');
             themeCheckbox.checked = true;
         } else {
-            document.documentElement.removeAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', 'light');
             localStorage.setItem('theme', 'light');
             themeCheckbox.checked = false;
         }
     }
+
     if (savedTheme) setTheme(savedTheme);
     else setTheme(prefersDark ? 'dark' : 'light');
-    themeCheckbox.addEventListener('change', (e) => {
-        setTheme(e.target.checked ? 'dark' : 'light');
-    });
+    themeCheckbox.addEventListener('change', (e) => setTheme(e.target.checked ? 'dark' : 'light'));
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
         if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
     });
