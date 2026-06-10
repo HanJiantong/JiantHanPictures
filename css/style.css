@@ -76,6 +76,7 @@
 
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
+        /* 同 [data-theme="dark"] 变量，省略重复 */
         --bg-body: #121212;
         --text-primary: #e0e0e0;
         --text-secondary: #b0b0b0;
@@ -122,41 +123,45 @@ body {
     line-height: 1.5;
     scroll-behavior: smooth;
     overflow-x: hidden;
+    scroll-snap-type: y mandatory;
 }
 
-/* 两屏滚动布局 */
 .section {
     width: 100%;
     height: 100vh;
     scroll-snap-align: start;
 }
 
-body {
-    scroll-snap-type: y mandatory;
-    overflow-y: scroll;
-}
-
-/* 第一屏：封面 */
+/* ========== 第一屏：封面 ========== */
 .section-cover {
+    position: relative;          /* 为 .cover-content 绝对定位提供参照 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    /* 移除原有的 display: flex 等，因为现在用绝对定位子元素来居中 */
+    display: block;
+}
+
+/* 新的 cover-content 全屏遮罩 */
+.cover-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: none;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    position: relative;
-}
-
-.cover-content {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    padding: 2rem 3rem;
-    border-radius: 48px;
     color: white;
+    padding: 2rem;
     animation: fadeInUp 1s ease;
 }
 
+/* 内部标题、副标题等样式可保留 */
 .cover-title {
     font-size: 3.5rem;
     font-weight: 700;
@@ -179,153 +184,63 @@ body {
     animation: bounce 1.5s infinite;
 }
 
-.scroll-hint i {
-    font-size: 1.5rem;
-}
-
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(8px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
 }
 
-/* ========== 第二屏：Flex 垂直居中布局（核心修复） ========== */
+/* ========== 第二屏：时间轴区域（修复动画方向） ========== */
 .section-timeline {
     position: relative;
     overflow-y: auto;
     background: var(--bg-body);
 }
 
+/* 默认状态：时间轴容器垂直居中 */
 .section-timeline .timeline-container {
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1), margin-top 0.3s ease;
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
 }
 
-/* 展开月份时：时间轴从居中位置向下移动 20vh（可调整数值） */
+/* 展开月份时：时间轴向下平滑移动（从居中位置下移） */
 .section-timeline.timeline-expanded .timeline-container {
-    transform: translateY(20px);
+    transform: translateY(-60%);
+    margin-top: 2rem;          /* 控制下移距离，可根据需要微调 */
 }
 
-/* 展开月份时：时间轴靠上对齐，让照片区域自然显示 */
-.section-timeline.timeline-expanded {
-    justify-content: flex-start;
-}
-
-.timeline-container {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
-}
-
-.timeline-content {
-    width: 100%;
-}
-
-/* 右上角主题开关（固定） */
-.theme-switch-wrapper {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
+/* 展开时调整内部布局顺序：照片在上，时间轴在下 */
+.section-timeline.timeline-expanded .timeline-content {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--card-bg);
-    padding: 6px 12px;
-    border-radius: 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(4px);
-    border: 1px solid var(--card-border);
+    flex-direction: column;
 }
 
-.theme-icon {
-    font-size: 14px;
-    transition: color 0.2s, opacity 0.2s;
+.section-timeline.timeline-expanded .timeline-wrapper {
+    order: 2;
+    margin-top: 2rem;          /* 时间轴与照片之间的间距 */
 }
 
-[data-theme="light"] .theme-icon-left {
-    color: #f39c12 !important;
-    opacity: 1;
+.section-timeline.timeline-expanded #photoSection {
+    order: 1;
+    margin-bottom: 1rem;
 }
 
-[data-theme="light"] .theme-icon-right {
-    color: var(--text-muted);
-    opacity: 0.4;
+/* 未展开时恢复块级布局 */
+.section-timeline .timeline-content {
+    display: block;
 }
 
-[data-theme="dark"] .theme-icon-right {
-    color: #f1c40f;
-    opacity: 1;
-}
-
-[data-theme="dark"] .theme-icon-left {
-    color: var(--text-muted);
-    opacity: 0.4;
-}
-
-.theme-switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 22px;
-}
-
-.theme-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #b0b0b0;
-    transition: 0.3s;
-    border-radius: 34px;
-}
-
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: 0.3s;
-    border-radius: 50%;
-}
-
-input:checked + .slider:before {
-    transform: translateX(24px);
-}
-
-/* 时间轴内部样式（横向时间轴 + 卡片） */
+/* 横向时间轴样式（保持不变） */
 .timeline-wrapper {
     display: flex;
     justify-content: center;
@@ -396,7 +311,7 @@ input:checked + .slider:before {
     font-weight: 600;
 }
 
-/* 照片展开区域 (滑动动画) */
+/* 照片区域（折叠/展开动画） */
 .photo-section {
     display: block;
     max-height: 0;
@@ -460,12 +375,10 @@ input:checked + .slider:before {
 .horizontal-scroll::-webkit-scrollbar {
     height: 6px;
 }
-
 .horizontal-scroll::-webkit-scrollbar-track {
     background: var(--desc-border);
     border-radius: 10px;
 }
-
 .horizontal-scroll::-webkit-scrollbar-thumb {
     background: var(--date-text);
     border-radius: 10px;
@@ -509,7 +422,7 @@ input:checked + .slider:before {
     width: 100%;
     aspect-ratio: 3 / 2;
     overflow: hidden;
-    background: var(--img-bg);
+    background: var(--card-bg);
     position: relative;
 }
 
@@ -542,10 +455,6 @@ input:checked + .slider:before {
 
 .card-image:hover .image-overlay-icon {
     opacity: 1;
-}
-
-.card-description {
-    display: none;
 }
 
 /* 灯箱 */
@@ -632,60 +541,70 @@ input:checked + .slider:before {
     margin-bottom: 0.5rem;
 }
 
+/* 右上角主题切换 */
+.theme-switch-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-bg);
+    padding: 6px 12px;
+    border-radius: 40px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--card-border);
+}
+
+.theme-icon {
+    font-size: 14px;
+    transition: color 0.2s, opacity 0.2s;
+}
+
+[data-theme="light"] .theme-icon-left { color: #f39c12 !important; opacity: 1; }
+[data-theme="light"] .theme-icon-right { color: var(--text-muted); opacity: 0.4; }
+[data-theme="dark"] .theme-icon-right { color: #f1c40f; opacity: 1; }
+[data-theme="dark"] .theme-icon-left { color: var(--text-muted); opacity: 0.4; }
+
+.theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 22px;
+}
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #b0b0b0;
+    transition: 0.3s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+input:checked + .slider:before { transform: translateX(24px); }
+
 @media (max-width: 768px) {
     .timeline-card {
         flex: 0 0 240px;
         width: 240px;
     }
-
-    .cover-title {
-        font-size: 2rem;
-    }
-
-    .cover-subtitle {
-        font-size: 1rem;
-    }
-
-    .horizontal-timeline-track {
-        gap: 1rem;
-    }
-}
-
-/* 展开月份时，时间轴容器增加上边距，使时间轴下移，照片区域位于中部 */
-.section-timeline.timeline-expanded .timeline-container {
-    margin-top: 12vh; /* 可根据喜好调整，使照片区域起始于视口中部 */
-    transition: margin-top 0.3s ease;
-}
-
-/* 收起后恢复 */
-.section-timeline .timeline-container {
-    margin-top: 0;
-    transition: margin-top 0.3s ease;
-}
-
-/* 展开月份时，重新排列顺序：照片在上，时间轴在下，且时间轴向下移动 */
-.section-timeline.timeline-expanded .timeline-content {
-    display: flex;
-    flex-direction: column;
-}
-
-.section-timeline.timeline-expanded .timeline-wrapper {
-    order: 2; /* 时间轴排在后面（下方） */
-    margin-top: 15vh; /* 时间轴向下移动，可根据喜好调整（例如 10vh, 120px） */
-    transition: margin-top 0.3s ease;
-}
-
-.section-timeline.timeline-expanded #photoSection {
-    order: 1; /* 照片区域排在前面（上方） */
-    margin-bottom: 2rem; /* 与时间轴留出间距 */
-}
-
-/* 收起时恢复默认块级布局 */
-.section-timeline .timeline-content {
-    display: block;
-}
-
-.section-timeline .timeline-wrapper {
-    margin-top: 0;
-    transition: margin-top 0.3s ease;
+    .cover-title { font-size: 2rem; }
+    .cover-subtitle { font-size: 1rem; }
+    .horizontal-timeline-track { gap: 1rem; }
 }
