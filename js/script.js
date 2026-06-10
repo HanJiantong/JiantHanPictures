@@ -34,19 +34,23 @@ function setRandomCoverBackground(photosData) {
 // 页面滚动切换（两屏结构：封面<->时间轴）
 let currentSectionIndex = 0;
 const sections = document.querySelectorAll('.section');
+
 function scrollToSection(index) {
     if (index < 0 || index >= sections.length) return;
-    sections[index].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    sections[index].scrollIntoView({behavior: 'smooth', block: 'start'});
     currentSectionIndex = index;
 }
 
 let wheelTimer = null;
+
 function bindWheelPageSwitch() {
     window.addEventListener('wheel', (e) => {
         // 若鼠标在照片区域或卡片上滚动，不触发全局翻页
         if (e.target.closest('.photo-section, .horizontal-scroll, .timeline-card')) return;
         if (wheelTimer) return;
-        wheelTimer = setTimeout(() => { wheelTimer = null; }, 300);
+        wheelTimer = setTimeout(() => {
+            wheelTimer = null;
+        }, 300);
         const delta = e.deltaY;
         if (delta > 0 && currentSectionIndex === 0) scrollToSection(1);
         else if (delta < 0 && currentSectionIndex === 1) scrollToSection(0);
@@ -64,7 +68,7 @@ function groupPhotosByMonth(photosArray) {
         const yearMonth = `${year}-${month}`;
         const displayMonth = `${year}年 ${parseInt(month)}月`;
         if (!groups.has(yearMonth)) {
-            groups.set(yearMonth, { yearMonth, displayMonth, items: [] });
+            groups.set(yearMonth, {yearMonth, displayMonth, items: []});
         }
         groups.get(yearMonth).items.push(photo);
     });
@@ -158,11 +162,19 @@ function expandPhotoSection(monthKey) {
                  data-img-location="${safeLocation}" 
                  data-img-intro="${safeIntro}">
                 <div class="card-image">
-                    <img src="${imageUrl}" alt="照片" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23eef2fa%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%2394a3b8%22%3E图片加载失败%3C%2Ftext%3E%3C%2Fsvg%3E'">
+                    <img src="${imageUrl}" alt="照片" loading="lazy">
                     <div class="image-overlay-icon"><i class="fas fa-search-plus"></i> 点击查看详情</div>
                 </div>
             </div>
         `;
+
+        // 在将 html 插入 photoSection 后，为所有图片绑定 error 事件
+        photoSection.innerHTML = html;
+        photoSection.querySelectorAll('.card-image img').forEach(img => {
+            img.addEventListener('error', function () {
+                // this.src = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23eef2fa%22%2F%3E%3Ctext%20x%3D%2250%25%22%20y%3D%2250%25%22%20dominant-baseline%3D%22middle%22%20text-anchor%3D%22middle%22%20fill%3D%22%2394a3b8%22%3E图片加载失败%3C%2Ftext%3E%3C%2Fsvg%3E';
+            });
+        });
     });
     html += '</div>';
     photoSection.innerHTML = html;
@@ -222,7 +234,7 @@ function enableHorizontalWheelScroll() {
             let delta = e.deltaY || e.detail || 0;
             if (e.deltaMode === 0 && Math.abs(delta) < 50) delta *= 18;
             container.scrollLeft += delta;
-        }, { passive: false });
+        }, {passive: false});
     });
 }
 
