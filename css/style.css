@@ -1,4 +1,4 @@
-/* 引入本地可变字体 */
+/* ===== 可变字体引入（思源黑体动态字重） ===== */
 @font-face {
     font-family: 'SourceHanSansCN-VF';
     src: url('../assets/fonts/SourceHanSansCN-VF.otf.woff2') format('woff2-variations');
@@ -7,7 +7,7 @@
     font-display: swap;
 }
 
-/* ========== 全局变量 ========== */
+/* ========== 全局 CSS 变量（亮色主题） ========== */
 :root {
     --bg-body: #f5f7fc;
     --text-primary: #1e293b;
@@ -41,6 +41,7 @@
     --timeline-active-text: #1e4a6b;
 }
 
+/* ========== 深色主题变量覆盖 ========== */
 [data-theme="dark"] {
     --bg-body: #121212;
     --text-primary: #e0e0e0;
@@ -74,9 +75,9 @@
     --timeline-active-text: #c0c0c0;
 }
 
+/* 系统主题偏好自动适配（无显式存储时） */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme]) {
-        /* 同 [data-theme="dark"] 变量，省略重复 */
         --bg-body: #121212;
         --text-primary: #e0e0e0;
         --text-secondary: #b0b0b0;
@@ -110,6 +111,7 @@
     }
 }
 
+/* 全局重置与滚动行为 */
 * {
     margin: 0;
     padding: 0;
@@ -123,26 +125,26 @@ body {
     line-height: 1.5;
     scroll-behavior: smooth;
     overflow-x: hidden;
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: y mandatory; /* 纵向滚动强制对齐到 .section */
 }
 
+/* 每一屏容器占满视口高度，用于滚动吸附 */
 .section {
     width: 100%;
     height: 100vh;
     scroll-snap-align: start;
 }
 
-/* ========== 第一屏：封面 ========== */
+/* ========== 第一屏：封面样式 ========== */
 .section-cover {
-    position: relative;          /* 为 .cover-content 绝对定位提供参照 */
+    position: relative; /* 为子元素 .cover-content 绝对定位提供锚点 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* 移除原有的 display: flex 等，因为现在用绝对定位子元素来居中 */
     display: block;
 }
 
-/* 新的 cover-content 全屏遮罩 */
+/* 封面内容遮罩层：半透明覆盖，文字垂直水平居中 */
 .cover-content {
     position: absolute;
     top: 0;
@@ -161,7 +163,6 @@ body {
     animation: fadeInUp 1s ease;
 }
 
-/* 内部标题、副标题等样式可保留 */
 .cover-title {
     font-size: 3.5rem;
     font-weight: 700;
@@ -184,24 +185,36 @@ body {
     animation: bounce 1.5s infinite;
 }
 
+/* 封面入场动画：淡入 + 上移 */
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* 滚动提示上下浮动动画 */
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(8px); }
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(8px);
+    }
 }
 
-/* ========== 第二屏：时间轴区域（修复动画方向） ========== */
+/* ========== 第二屏：时间轴主区域 ========== */
 .section-timeline {
     position: relative;
     overflow-y: auto;
     background: var(--bg-body);
 }
 
-/* 默认状态：时间轴容器垂直居中 */
+/* 默认状态下，时间轴容器在屏内垂直居中 */
 .section-timeline .timeline-container {
     position: relative;
     top: 50%;
@@ -213,13 +226,13 @@ body {
     padding: 2rem 1.5rem;
 }
 
-/* 展开月份时：时间轴向下平滑移动（从居中位置下移） */
+/* 展开某个月份后，时间轴整体向上收缩（为照片区域让出空间） */
 .section-timeline.timeline-expanded .timeline-container {
     transform: translateY(-60%);
-    margin-top: 2rem;          /* 控制下移距离，可根据需要微调 */
+    margin-top: 2rem;
 }
 
-/* 展开时调整内部布局顺序：照片在上，时间轴在下 */
+/* 展开时强制调整内部布局顺序：照片区域在上，时间轴在下 */
 .section-timeline.timeline-expanded .timeline-content {
     display: flex;
     flex-direction: column;
@@ -227,7 +240,7 @@ body {
 
 .section-timeline.timeline-expanded .timeline-wrapper {
     order: 2;
-    margin-top: 2rem;          /* 时间轴与照片之间的间距 */
+    margin-top: 2rem;
 }
 
 .section-timeline.timeline-expanded #photoSection {
@@ -235,12 +248,12 @@ body {
     margin-bottom: 1rem;
 }
 
-/* 未展开时恢复块级布局 */
+/* 未展开时恢复块级自然顺序 */
 .section-timeline .timeline-content {
     display: block;
 }
 
-/* 横向时间轴样式（保持不变） */
+/* 横向时间轴容器（支持水平滚动） */
 .timeline-wrapper {
     display: flex;
     justify-content: center;
@@ -255,6 +268,7 @@ body {
     padding: 20px 0;
 }
 
+/* 时间轴底部长线（轨道线） */
 .horizontal-timeline::before {
     content: '';
     position: absolute;
@@ -267,6 +281,7 @@ body {
     z-index: 0;
 }
 
+/* 节点列表：flex 水平排列 */
 .horizontal-timeline-track {
     display: inline-flex;
     align-items: center;
@@ -274,6 +289,7 @@ body {
     padding: 0 1rem;
 }
 
+/* 单个时间节点（月份） */
 .timeline-node {
     position: relative;
     display: inline-flex;
@@ -293,6 +309,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
+/* 当前激活的月份节点（高亮圆点 + 放大） */
 .timeline-node.active .node-dot {
     background: var(--timeline-active-node);
     border-color: var(--timeline-active-node);
@@ -311,7 +328,7 @@ body {
     font-weight: 600;
 }
 
-/* 照片区域（折叠/展开动画） */
+/* ===== 展开的照片区域（折叠动画） ===== */
 .photo-section {
     display: block;
     max-height: 0;
@@ -323,11 +340,12 @@ body {
 }
 
 .photo-section.expanded {
-    max-height: 2000px;
+    max-height: 2000px; /* 足够容纳多张卡片的高度 */
     opacity: 1;
     margin-top: 1.5rem;
 }
 
+/* 月份详情头部：标题 + 关闭按钮 */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -361,6 +379,7 @@ body {
     background: var(--date-bg);
 }
 
+/* 横向滚动照片列表 */
 .horizontal-scroll {
     display: inline-flex;
     flex-direction: row;
@@ -375,15 +394,18 @@ body {
 .horizontal-scroll::-webkit-scrollbar {
     height: 6px;
 }
+
 .horizontal-scroll::-webkit-scrollbar-track {
     background: var(--desc-border);
     border-radius: 10px;
 }
+
 .horizontal-scroll::-webkit-scrollbar-thumb {
     background: var(--date-text);
     border-radius: 10px;
 }
 
+/* 照片卡片样式 */
 .timeline-card {
     flex: 0 0 280px;
     width: 280px;
@@ -418,6 +440,7 @@ body {
     color: var(--date-text);
 }
 
+/* 图片容器，固定宽高比 3:2 */
 .card-image {
     width: 100%;
     aspect-ratio: 3 / 2;
@@ -438,6 +461,7 @@ body {
     transform: scale(1.03);
 }
 
+/* 图片悬停时显示“点击查看详情”提示浮层 */
 .image-overlay-icon {
     position: absolute;
     bottom: 8px;
@@ -457,7 +481,7 @@ body {
     opacity: 1;
 }
 
-/* 灯箱 */
+/* ========== 灯箱（大图预览） ========== */
 .lightbox-modal {
     display: none;
     position: fixed;
@@ -488,6 +512,7 @@ body {
     object-fit: contain;
 }
 
+/* 灯箱底部的图片元数据栏 */
 .lightbox-caption {
     position: absolute;
     bottom: 20px;
@@ -528,6 +553,7 @@ body {
     transform: scale(1.05);
 }
 
+/* 空状态占位提示 */
 .empty-state {
     text-align: center;
     padding: 2rem;
@@ -541,7 +567,7 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* 右上角主题切换 */
+/* ========== 主题切换控件（右上角） ========== */
 .theme-switch-wrapper {
     position: fixed;
     top: 20px;
@@ -563,18 +589,41 @@ body {
     transition: color 0.2s, opacity 0.2s;
 }
 
-[data-theme="light"] .theme-icon-left { color: #f39c12 !important; opacity: 1; }
-[data-theme="light"] .theme-icon-right { color: var(--text-muted); opacity: 0.4; }
-[data-theme="dark"] .theme-icon-right { color: #f1c40f; opacity: 1; }
-[data-theme="dark"] .theme-icon-left { color: var(--text-muted); opacity: 0.4; }
+/* 根据主题改变太阳/月亮图标透明度与颜色 */
+[data-theme="light"] .theme-icon-left {
+    color: #f39c12 !important;
+    opacity: 1;
+}
 
+[data-theme="light"] .theme-icon-right {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+[data-theme="dark"] .theme-icon-right {
+    color: #f1c40f;
+    opacity: 1;
+}
+
+[data-theme="dark"] .theme-icon-left {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+/* 切换按钮滑块基础样式 */
 .theme-switch {
     position: relative;
     display: inline-block;
     width: 46px;
     height: 22px;
 }
-.theme-switch input { opacity: 0; width: 0; height: 0; }
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
 .slider {
     position: absolute;
     cursor: pointer;
@@ -586,6 +635,7 @@ body {
     transition: 0.3s;
     border-radius: 34px;
 }
+
 .slider:before {
     position: absolute;
     content: "";
@@ -597,14 +647,27 @@ body {
     transition: 0.3s;
     border-radius: 50%;
 }
-input:checked + .slider:before { transform: translateX(24px); }
 
+input:checked + .slider:before {
+    transform: translateX(24px);
+}
+
+/* 移动端适配：缩小卡片尺寸及标题字号 */
 @media (max-width: 768px) {
     .timeline-card {
         flex: 0 0 240px;
         width: 240px;
     }
-    .cover-title { font-size: 2rem; }
-    .cover-subtitle { font-size: 1rem; }
-    .horizontal-timeline-track { gap: 1rem; }
+
+    .cover-title {
+        font-size: 2rem;
+    }
+
+    .cover-subtitle {
+        font-size: 1rem;
+    }
+
+    .horizontal-timeline-track {
+        gap: 1rem;
+    }
 }

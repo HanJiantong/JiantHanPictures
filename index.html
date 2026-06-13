@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <!-- 定义文档元数据：字符集与视口适配 -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
     <title>时光影集</title>
-    <!-- Font Awesome 6 (免费图标库) -->
-    <link rel="stylesheet" href="assets/fontawesome/css/all.css">
-    <!-- 主样式表 -->
-    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome 6 图标库，用于界面图标渲染 -->
+    <link href="assets/fontawesome/css/all.css" rel="stylesheet">
+    <!-- 主样式表：定义全站视觉、主题及响应式布局 -->
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-<!-- 固定右上角的深色/浅色模式切换按钮 -->
+
+<!-- 全局主题切换控件（固定在右上角） -->
 <div class="theme-switch-wrapper">
     <i class="fas fa-sun theme-icon theme-icon-left"></i>
     <label class="theme-switch">
-        <input type="checkbox" id="themeToggleCheckbox">
+        <input id="themeToggleCheckbox" type="checkbox">
         <span class="slider round"></span>
     </label>
     <i class="fas fa-moon theme-icon theme-icon-right"></i>
 </div>
 
-<!-- 第一屏：封面，背景随机抽取一张照片 -->
+<!-- 第一屏：封面区域，背景图随机取自照片集 -->
 <section class="section section-cover" id="coverSection">
     <div class="cover-content">
         <h1 class="cover-title">时光影集</h1>
@@ -32,23 +34,24 @@
     </div>
 </section>
 
-<!-- 第二屏：横向时间轴 + 按月展开的照片区域 -->
+<!-- 第二屏：横向时间轴 + 按月份展开的相册区域 -->
 <section class="section section-timeline" id="timelineSection">
     <div class="timeline-container">
-        <div id="timelineContainer" class="timeline-content">
-            <div class="empty-state"><i class="far fa-images"></i><p>加载中...</p></div>
+        <div class="timeline-content" id="timelineContainer">
+            <div class="empty-state"><i class="far fa-images"></i>
+                <p>加载中...</p></div>
         </div>
     </div>
 </section>
 
-<!-- 灯箱组件：用于大图预览及显示详细信息 -->
-<div id="lightbox" class="lightbox-modal">
+<!-- 灯箱组件：点击照片后的大图预览及元数据展示 -->
+<div class="lightbox-modal" id="lightbox">
     <div class="close-lightbox" id="closeLightboxBtn">&times;</div>
-    <div class="lightbox-content"><img id="lightboxImg" src="" alt="放大预览"></div>
-    <div id="lightboxCaption" class="lightbox-caption"></div>
+    <div class="lightbox-content"><img alt="放大预览" id="lightboxImg" src=""></div>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
 
-<!-- 业务逻辑脚本 -->
+<!-- 前端交互主脚本：照片加载、时间轴渲染、主题切换、滚动逻辑等 -->
 <script src="js/script.js"></script>
 </body>
 </html>
