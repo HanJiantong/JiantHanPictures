@@ -106,15 +106,15 @@ async function generate() {
     const photos = [];
     for (const fullPath of imageFiles) {
         const relativePath = path.relative(__dirname, fullPath).replace(/\\/g, '/');
-        const { date, shutter, aperture, iso, size } = await getPhotoMetadata(fullPath);
+        const { date, shutter, aperture, iso/*, size*/ } = await getPhotoMetadata(fullPath);
         const timestamp = date.getTime();
         const displayDate = `${date.getFullYear()}年 ${String(date.getMonth() + 1).padStart(2, '0')}月 ${String(date.getDate()).padStart(2, '0')}日`;
-        const fileSizeKB = (size / 1024).toFixed(1);
-        const intro = `拍摄于 ${displayDate} · ${fileSizeKB} KB`;
+        // const fileSizeKB = (size / 1024).toFixed(1);
+        // const intro = `拍摄于 ${displayDate} · ${fileSizeKB} KB`;
 
         photos.push({
             date: displayDate,
-            intro: intro,
+            intro: '',
             location: '',          // 位置信息可手动补充
             shutter: shutter,
             aperture: aperture,
